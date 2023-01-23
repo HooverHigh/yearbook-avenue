@@ -45,7 +45,7 @@
         "asarUnpack": [
             "./node_modules/node-notifier/**/*"
         ],
-        "artifactName": "Quest-2-Management-${aarchtext}.${ext}",
+        "artifactName": "Quest-2-Management-${arch}.${ext}",
         "mac": {
             "icon": "build/app.icns",
             "category": "Admin"
