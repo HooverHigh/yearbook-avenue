@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quest2 Management</title>
+  <script>
+    if (typeof module === 'object') {
+      window.module = module;
+      module = undefined;
+    };
+  </script>
+  <!--<link rel="stylesheet" id="bootstrapcss" href="./css/bs/bootstrap.css">-->
+  <link rel="stylesheet" id="bootstrapcss" href="./css/bs/css/material-dashboard.min.css">
+  <script src="./js/date.js"></script>
+  <script src="./js/settings.js"></script>
+  <script src='./js/lib/egg.min.js'></script>
+  <script src="./js/themeselect.js"></script>
+  <link rel="stylesheet" href="./fonts/DiscordFont/DiscordFont.css" type="text/css">
+  <link rel="stylesheet" href="./fonts/Cabin/Cabin.css" type="text/css">
+  <link rel="stylesheet" href="./fonts/Mona_Sans/MonaSans.css" type="text/css">
+  <link rel="stylesheet" href="./fonts/Hubot_Sans/HubotSans.css" type="text/css">
+  <link rel="stylesheet" href="./css/fa/5.7.0/css/all.css">
+  <link rel="stylesheet" href="./css/fa/6.2.0/css/all.min.css">
+  <link rel="stylesheet" href="../../node_modules/bootstrap-icons/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./css/bs/css/nucleo-icons.css">
+  <link rel="stylesheet" href="./css/bs/css/nucleo-svg.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel='stylesheet' href='./css/izitoast.min.css' type='text/css'>
+  <link rel="stylesheet" href="./css/status.css" type="text/css">
+  <link rel="stylesheet" href="./css/scrollbar.css" type="text/css">
+  <link rel="stylesheet" href="./css/style.css" type="text/css">
+  <link rel='stylesheet' href='./css/loading.css' type='text/css'>
+  <div class='loader'>
+    <center>
+      <div class='spinner-border text-success' role='status'>
+        <span class='sr-only'></span>
+      </div>
+      <h1 class="text-white" id="loadingtext">Loading</h1>
+    </center>
+  </div>
+  <script src="./js/lib/jquery-3.3.1.min.js" type="application/javascript"></script>
+  <script async defer type="text/javascript" src="./js/loading.js"></script>
+  <script>
+    const axios = require("axios");
+  </script>
+  <script src="https://kit-pro.fontawesome.com/releases/v5.10.1/js/pro.min.js" data-auto-fetch-svg></script>
+</head>
+
+<body class="dark-version noselect d-flex flex-column min-vh-100">
+  <nav class="navbar navbar-dark navbar-expand-md bg-dark">
+    <div class="container">
+      <ul class="nav navbar-nav" tabindex="-1">
+        <li tabindex="-1">
+          <a href="#" target="_blank" class="navbar-brand d-flex align-items-center" tabindex="-1">
+            <span
+              class="bs-icon-sm bs-icon-rounded bs-icon-primary-light d-flex justify-content-center align-items-center me-2 bs-icon">
+              <img src="./img/icons/oculus-logo-v1-white.png" style="width: 90px;" alt="logo" tabindex="-1">
+            </span>
+          </a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+          <li>
+            <a class="btn btn-discord ms-md-2 mb-0"
+              style="font-family: 'Whitney'; font-style: normal; /*font-weight: 500;*/" role="button"
+              id="discordbtn-href" href="https://discord.gg/acApgmT7k7" target="_blank">
+              <img id="discordbtn-img" src="./img/discord/discord-logo-color.svg" width="25px;" /> Discord </a>
+          </li>
+          </li>
+          <li>
+            <a class="btn btn-primary ms-md-2 mb-0" style="font-family: Hubot-Sans;" role="button" id="githubbtn-href"
+              href="https://github.com/hooverhigh/quest2management" target="_blank">
+              <i class="fab fa-github fa-lg"></i> Github </a>
+          </li>
+          <li>
+            <button class="btn btn-secondary ms-md-2 mb-0"
+              style="font-family: Hubot-Sans; display: inline; float: left;" id="SettingsBtn" type="button"
+              style="display: inline;" data-bs-toggle="offcanvas" data-bs-target="#SettingsPannel"
+              aria-controls="SettingsCanvas">
+              <i class="fa fa-cog"></i> Settings </button>
+          </li>
+        </ul>
+      </ul>
+    </div>
+  </nav>
+  <div class="d-flex justify-content-center">
+    <div class="alert alert-dismissible alert-info fade show" id="newsinfo" style="display: none;">
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <h4 class="alert-heading">Info</h4>
+      <p class="mb-0">Fetching latest news...</p>
+    </div>
+    <div class="modal fade" id="DLGMODAL" tabindex="-1" role="dialog" aria-labelledby="DLMODAL-title"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-dark">
+          <div class="modal-header">
+            <h5 class="modal-title" id="DLMODAL-title">Downloding</h5>
+          </div>
+          <div class="modal-body dark-version" id="DLMODAL-body">
+            <p class="text" id="progress-text" style="display: none;">Checking for updates...</p>
+            <p class="text" id="download-progress-text" style="display: none;"></p>
+            <div id="progbardiv" style="display: none; text-align: center;" class="progress">
+              <div id="progbar" class="progress-bar"></div>
+            </div>
+            <button class="btn btn-primary ms-md-2 mb-0" style="font-family: Hubot-Sans; display: none; float: right;"
+              id="DenyDLGModalBtn" type="button">
+              <i class="fa-regular fa-circle-xmark"></i> No, Don't Install </button>
+            <button class="btn btn-primary ms-md-2 mb-0" style="font-family: Hubot-Sans; display: none; float: right;"
+              id="AcceptDLGModalBtn" type="button">
+              <i class="fa fa-download"></i> Ok, Install </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="SettingsPannel" aria-labelledby="SettingsCanvasLabel">
+      <div class="offcanvas-header bg-dark">
+        <h5 class="offcanvas-title h3" id="SettingsCanvasLabel">Settings:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body dark-version">
+        <fieldset class="form-group">
+          <legend class="mt-0">View:</legend>
+          <form>
+            <div class="row">
+              <div class="col">
+                <p>Dark/Light Mode</p>
+              </div>
+              <div class="col form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="UITransparency">
+              </div>
+            </div>
+          </form>
+          <div id="DiscCh" style="display: none;">
+            <legend class="mt-0">Discord:</legend>
+            <form>
+              <div class="row">
+                <div class="col">
+                  <p>Enable Discord RPC</p>
+                </div>
+                <div class="col form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="ShowDiscordRPC">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div id="AppInfo" style="display: block; bottom: 11px; position: absolute;">
+            <legend class="mb-0">Appstore Info:</legend>
+            <p id="lver" class="mb-0">Version: Unknown</p>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+    <main class="justify-content-center">
+      <div class="section min-vh-85 position-relative transform-scale-0 transform-scale-md-7">
+        <div class="container-fluid">
+          <div class="col-lg-20 col-md-20 ps-md-5">
+            <div class="d-flex">
+              <div class="me-auto">
+                <h1 class="display-1 font-weight-bold mt-n3 text-white" id="connstat">No device connected</h1>
+                <h5 class="ms-1 text-white"> Connection Status <div id="connectionstatusicon" class="status offline"
+                    data-bs-toggle="tooltip" data-bs-placement="top" title="Disconnected"></div>
+                </h5>
+              </div>
+              <div class="ms-auto">
+                <img class="w-90 float-end mt-lg-n4" src="./img/vrheadset-questionmark.png" alt="VR Headset Missing"
+                  id="HeadsetImg">
+              </div>
+            </div>
+            <div class="pt-4" id="devhelptip1">
+              <div class="card mb-3">
+                <h3 class="bg-primary card-header pb-2 pt-2">Helpful tip</h3>
+                <div class="card-body">
+                  <h5 class="card-title">If your device is still not detected, try restarting your headset, or try a
+                    different cable.</h5>
+                  <h5>
+                    Also make sure your device is in developer mode!
+                  </h5>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-4" style="display: none;" id="deviceinfo">
+              <div class="row">
+                <h1>System Info:</h1>
+                <div class="col-lg-4 col-md-6 mt-4 mt-sm-0">
+                  <div class="card bg-gradient-dark move-on-hover">
+                    <div class="card-body">
+                      <div class="d-flex">
+                        <div class="mt-sm-0">
+                          <h5 class="mb-0 text-white">Battery</h5>
+                          <i class="fa-solid fa-battery-full fa-2xl"></i>
+                        </div>
+                        <div class="ms-auto">
+                          <h1 class="text-white text-end mb-0 mt-n2" id="batperc">0%</h1>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6 mt-4 mt-sm-0" style="display: none;">
+                  <div class="card bg-gradient-dark move-on-hover">
+                    <div class="card-body">
+                      <div class="d-flex">
+                        <div class="mt-sm-0">
+                          <h5 class="mb-0 text-white">Storage</h5>
+                          <i class="fa-solid fa-hard-drive fa-2xl"></i>
+                        </div>
+                        <div class="ms-auto">
+                          <h1 class="text-white text-end mb-0 mt-n2" id="storagecap">0/0GB</h1>
+                          <p class="text-sm mb-0 text-white" id="storageused">0% used</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h1 class="pt-4">Other:</h1>
+              <div class="row">
+                <div class="col">
+                  <button class="btn btn-lg btn-purple ms-md-2 mb-0"
+                    style="font-family: Hubot-Sans; font-style: normal;" id="viewscrnbtn">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> View screen
+                  </button>
+                  <button class="btn btn-lg btn-secondary ms-md-2 mb-0"
+                    style="font-family: Hubot-Sans; font-style: normal;" id="installapkbtn">
+                    <i class="fa-solid fa-download"></i> Install APK
+                  </button>
+                </div>
+                <!--<div class="col">
+                  <button class="btn btn-lg btn-danger ms-md-2 mb-0"
+                    style="font-family: Hubot-Sans; font-style: normal;" id="recscrnbtn">
+                    <i class="fa-solid fa-camera"></i> Record screen
+                  </button>
+                </div>
+                <div class="col">
+                  <button class="btn btn-lg btn-info ms-md-2 mb-0" style="font-family: Hubot-Sans; font-style: normal;"
+                    id="ssscrnbtn">
+                    <i class="fa-solid fa-camera"></i> Take a screenshot
+                  </button>
+                </div>-->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="./js/lib/jquery-3.3.1.min.js" type="application/javascript"></script>
+    <script>
+      if (window.module) module = window.module;
+    </script>
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    <script src="./js/lib/izitoast.min.js"></script>
+    <script src="./js/lib/core/popper.min.js"></script>
+    <script src="./js/lib/core/bootstrap.bundle.min.js"></script>
+    <script src="./js/lib/plugins/perfect-scrollbar.min.js"></script>
+    <script src="./js/lib/plugins/smooth-scrollbar.min.js"></script>
+    <script src="./js/lib/material-dashboard.min.js"></script>
+    <script src="./js/app.js"></script>
+</body>
+
+</html>

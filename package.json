@@ -1,0 +1,75 @@
+{
+    "name": "quest2management",
+    "version": "1.0.9",
+    "description": "An app to manage quest2 devices.",
+    "main": "src/main/index.js",
+    "scripts": {
+        "test": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder",
+        "dist-mac": "electron-builder --mac",
+        "dist-win": "electron-builder --win",
+        "rebuild": "electron-rebuild",
+        "publish": "electron-builder --publish always"
+    },
+    "author": {
+        "name": "oxmc",
+        "email": "oxmc7769@gmail.com"
+    },
+    "license": "GNU GPLv3",
+    "devDependencies": {
+        "electron": "^18.3.15",
+        "electron-builder": "^23.6.0"
+    },
+    "dependencies": {
+        "@electron/remote": "^2.0.7",
+        "@terascope/fetch-github-release": "^0.8.7",
+        "axios": "^0.26.1",
+        "bootstrap-icons": "^1.9.1",
+        "discord-rpc": "^4.0.1",
+        "electron-json-storage": "^4.6.0",
+        "electron-window-state": "^5.0.3",
+        "fluent-ffmpeg": "^2.1.2",
+        "fs": "^0.0.1-security",
+        "log4js": "^6.3.0",
+        "node-notifier": "^10.0.0",
+        "onezip": "^5.0.0",
+        "os": "^0.1.2",
+        "path": "^0.12.7",
+        "request": "^2.88.2",
+        "v8-compile-cache": "^2.3.0"
+    },
+    "build": {
+        "appId": "com.oxmc.hooverhigh.quest2management",
+        "productName": "Quest 2 Management",
+        "asarUnpack": [
+            "./node_modules/node-notifier/**/*"
+        ],
+        "artifactName": "Quest-2-Management.${ext}",
+        "mac": {
+            "icon": "build/app.icns",
+            "category": "Admin"
+        },
+        "linux": {
+            "target": [
+                "deb"
+            ],
+            "icon": "build/app.png",
+            "category": "Admin"
+        },
+        "win": {
+            "target": [
+                "nsis"
+            ],
+            "icon": "build/app.ico"
+        },
+        "protocols": [
+            {
+                "name": "q2mgm",
+                "schemes": [
+                    "q2mgm"
+                ]
+            }
+        ]
+    }
+}
