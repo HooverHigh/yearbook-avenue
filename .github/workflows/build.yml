@@ -5,7 +5,7 @@ on:
       - '*beta*'
     branches: [ "master" ]
   pull_request:
-  tags-ignore:
+    tags-ignore:
       - '*beta*'
     branches: [ "master" ]
   workflow_dispatch: {}
