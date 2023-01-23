@@ -39,7 +39,7 @@ jobs:
     - name: build (armv7l)
       env:
           aarchtext: "armv7l"
-      run: npm run dist-linux-armv7l
+      run: npm run dist --linux --armv7l
 
     - name: build (ia32)
       env:
