@@ -48,11 +48,7 @@
         "artifactName": "Quest-2-Management-${aarchtext}.${ext}",
         "mac": {
             "icon": "build/app.icns",
-            "category": "Admin",
-            "arch": [
-                "x64",
-                "arm64"
-            ]
+            "category": "Admin"
         },
         "linux": {
             "target": [
