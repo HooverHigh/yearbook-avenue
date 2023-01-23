@@ -1,0 +1,140 @@
+name: Build all
+on:
+  push:
+    tags-ignore:
+      - '*beta*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    env:
+        GITHUB_TOKEN: ${{ secrets.GHT }}
+    steps:
+    
+    - name: Checkout git repo
+      uses: actions/checkout@v2
+    - name: setup node and npm
+      uses: actions/setup-node@master
+      with:
+        node-version: 16
+    - name: Get npm version action
+      id: npmv
+      uses: pchynoweth/action-get-npm-version@1.0.1
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: build (x64)
+      env:
+          aarchtext: "x64"
+      run: npm run dist --linux
+
+    - name: build (arm64)
+      env:
+          aarchtext: "arm64"
+      run: npm run dist --linux --arm64
+
+    - name: build (armv7l)
+      env:
+          aarchtext: "armv7l"
+      run: npm run dist-linux-armv7l
+
+    - name: build (ia32)
+      env:
+          aarchtext: "ia32"
+      run: npm run dist --linux --ia32
+    
+    - name: Upload all
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/*.AppImage
+          dist/latest*.yml
+        token: ${{ secrets.GHT }}
+        tag_name: "v${{ steps.npmv.outputs.version }}"
+        body_path: ".github/workflows/body.md"
+
+  windows:
+    continue-on-error: true
+    runs-on: windows-latest
+    env:
+        GITHUB_TOKEN: ${{ secrets.GHT }}
+    steps:
+    - name: Checkout git repo
+      uses: actions/checkout@v2
+    - name: setup node and npm
+      uses: actions/setup-node@master
+      with:
+        node-version: 16
+    - name: Get npm version action
+      id: npmv
+      uses: pchynoweth/action-get-npm-version@1.0.1
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: build (x64)
+      env:
+          aarchtext: "x64"
+      run: npm run dist --win32
+
+    - name: build (arm64)
+      env:
+          aarchtext: "arm64"
+      run: npm run dist --win32 --arm64
+
+    - name: build (ia32)
+      env:
+          aarchtext: "ia32"
+      run: npm run dist --win32 --ia32
+    
+    - name: Upload all
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/*.exe
+          dist/latest*.yml
+        token: ${{ secrets.GHT }}
+        tag_name: "v${{ steps.npmv.outputs.version }}"
+        body_path: ".github/workflows/body.md"
+
+  macos:
+    continue-on-error: true
+    runs-on: macos-latest
+    env:
+        GITHUB_TOKEN: ${{ secrets.GHT }}
+    steps:
+    - name: Checkout git repo
+      uses: actions/checkout@v2
+    - name: setup node and npm     
+      uses: actions/setup-node@master
+      with:
+        node-version: 16
+    - name: Get npm version action
+      id: npmv
+      uses: pchynoweth/action-get-npm-version@1.0.1
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: build (x64)
+      env:
+          aarchtext: "x64"
+      run: npm run dist --macos
+
+    - name: build (arm64)
+      env:
+          aarchtext: "arm64"
+      run: npm run dist --macos --arm64
+    
+    - name: Upload all
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/*.dmg
+          dist/latest*.yml
+        token: ${{ secrets.GHT }}
+        tag_name: "v${{ steps.npmv.outputs.version }}"
+        body_path: ".github/workflows/body.md"
