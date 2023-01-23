@@ -2,4 +2,4 @@
 
 # About This Update
 
-This update includes auto build for github
+This update includes support for m2 Macs
