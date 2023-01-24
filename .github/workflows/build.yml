@@ -54,7 +54,6 @@ jobs:
       with:
         files: |
           dist/*.deb
-          dist/latest*.yml
         token: ${{ secrets.GHT }}
         tag_name: "v${{ steps.npmv.outputs.version }}"
         body_path: ".github/workflows/body.md"
@@ -98,7 +97,6 @@ jobs:
       with:
         files: |
           dist/*.exe
-          dist/latest*.yml
         token: ${{ secrets.GHT }}
         tag_name: "v${{ steps.npmv.outputs.version }}"
         body_path: ".github/workflows/body.md"
@@ -137,7 +135,6 @@ jobs:
       with:
         files: |
           dist/*.dmg
-          dist/latest*.yml
         token: ${{ secrets.GHT }}
         tag_name: "v${{ steps.npmv.outputs.version }}"
         body_path: ".github/workflows/body.md"
