@@ -101,6 +101,13 @@ module.exports = {
         });
         return adb.toString();
     },
+    uninstallApp: function (appname) {
+        var cmd = `uninstall ${appname}`;
+        const adb = execFileSync(adbexecutable, cmd.split(' '), {
+            cwd: `${rootpath}`
+        });
+        return adb.toString();
+    },
     getStorageDEV: function () {
         const adb = execFileSync(adbexecutable, ['shell', 'df', '-h'], {
             cwd: `${rootpath}`

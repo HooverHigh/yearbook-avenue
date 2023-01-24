@@ -1,4 +1,4 @@
-var bootstrapcss, discordlogo, discordwidth, discordbtn, navbarcolor, seasonname;
+var discordlogo, discordwidth, discordbtn, seasonname;
 
 var rootcss = document.querySelector(':root');
 
@@ -51,92 +51,61 @@ function check_holiday(dt_date) {
 
     // misc complex dates
     if (s_date1 == '1/20' && (((dt_date.getFullYear() - 1937) % 4) == 0)
-        // Inauguration Day, January 20th every four years, starting in 1937. 
+        // Inauguration Day, January 20th every four years, starting in 1937.
     ) return true;
 
     if (n_month == 11 && n_date >= 2 && n_date < 9 && n_wday == 2
-        // Election Day, Tuesday on or after November 2. 
+        // Election Day, Tuesday on or after November 2.
     ) return true;
 
     return false;
 }
 
 if (currentMonth == 10) {
-    bootstrapcss = "vapor";
-    discordlogo = "discord/discord-halloween-nobg.png";
-    discordwidth = "25px";
-    navbarcolor = "info";
+    discordlogo = "discord-halloween-nobg.png";
     seasonname = "Halloween";
-    var egg = new Egg("h,p,p,y,h,l,w,n", function() {
+    var egg = new Egg("h,p,p,y,h,l,w,n", function () {
         $("#DLGMODAL").modal({ backdrop: 'static', keyboard: false });
         document.getElementById("DLMODAL-title").innerHTML = "Happy Halloween!";
-        document.getElementById("DLMODAL-body").innerHTML = "<img src='./img/season/pumpkin-smile.gif' />"; //"<video autoplay loop nocontrols><source src='./img/discord/discord-halloween.webm' type='video/webm'></source></video>";
+        document.getElementById("DLMODAL-body").innerHTML = "<img src='./img/season/pumpkin-smile.gif' />"; //"<video autoplay loop nocontrols><source src='./img/discord-halloween.webm' type='video/webm'></source></video>";
         $('#DLGMODAL').modal('show');
-        setTimeout(function() {
+        setTimeout(function () {
             $('#DLGMODAL').modal('hide');
         }, 5000);
     }).listen();
 } else if (currentMonth == 11) {
-    bootstrapcss = "darkly";
-    discordlogo = "discord/discord-logo-white.svg";
-    discordwidth = "25px";
-    navbarcolor = "";
+    discordlogo = "discord-logo-white.svg";
     seasonname = "Thanksgiving";
-    var egg = new Egg("h,p,p,y,t,g", function() {
+    var egg = new Egg("h,p,p,y,t,g", function () {
         $("#DLGMODAL").modal({ backdrop: 'static', keyboard: false });
         document.getElementById("DLMODAL-title").innerHTML = "Happy Thanksgiving!";
         document.getElementById("DLMODAL-body").innerHTML = "<img src='./img/season/turkey.gif' />";
         $('#DLGMODAL').modal('show');
-        setTimeout(function() {
+        setTimeout(function () {
             $('#DLGMODAL').modal('hide');
         }, 5000);
     }).listen();
 } else if (currentMonth == 12) {
-    bootstrapcss = "darkly";
-    discordlogo = "discord/discord-christmas-nobg.png";
-    discordwidth = "25px";
-    navbarcolor = "";
+    discordlogo = "discord-christmas-nobg.png";
     seasonname = "Christmas";
-    var egg = new Egg("m,r,r,y,c,m", function() {
+    var egg = new Egg("m,r,r,y,c,m", function () {
         $("#DLGMODAL").modal({ backdrop: 'static', keyboard: false });
         document.getElementById("DLMODAL-title").innerHTML = "Merry Christmas!";
         document.getElementById("DLMODAL-body").innerHTML = "<img src='./img/season/snoman.gif' />";
         $('#DLGMODAL').modal('show');
-        setTimeout(function() {
+        setTimeout(function () {
             $('#DLGMODAL').modal('hide');
         }, 5000);
     }).listen();
 } else {
-    bootstrapcss = "quartz";
-    discordlogo = "discord/discord-logo-white.svg";
-    discordwidth = "22px";
-    navbarcolor = "dark";
+    discordlogo = "discord-logo-white.svg";
     seasonname = "";
 };
 
+discordwidth = "25px";
+
 discordbtn = {
-    "href": "https://discord.com/invite/acApgmT7k7",
-    "img": `./img/${discordlogo}`,
+    "href": "https://link.hooverhigh.ml/discord",
+    "img": `./img/discord/${discordlogo}`,
     "width": `${discordwidth}`
-};
-
-var forceenabletransparency = false;
-
-var enabletransparency = false;
-
-if (process.platform == "win32" || process.platform == "darwin") {
-    enabletransparency = true;
-};
-
-if (forceenabletransparency != null && forceenabletransparency == true) {
-    enabletransparency = true;
-};
-
-//Set transparency:
-if (enabletransparency == true) {
-    console.log("Enabling transparency");
-    rootcss.style.setProperty('--bs-transparent', 'transparent');
-} else {
-    console.log("Disabling transparency");
-    rootcss.style.setProperty('--bs-transparent', '#18272c');
 };
