@@ -1,6 +1,6 @@
 {
-    "name": "quest2management",
-    "version": "1.0.9",
+    "name": "quest-2-management",
+    "version": "2.0.0",
     "description": "An app to manage quest2 devices.",
     "main": "src/main/index.js",
     "scripts": {
@@ -45,7 +45,7 @@
         "asarUnpack": [
             "./node_modules/node-notifier/**/*"
         ],
-        "artifactName": "Quest-2-Management-${env.aarchtext}.${ext}",
+        "artifactName": "quest-2-management-${env.aarchtext}.${ext}",
         "mac": {
             "icon": "build/app.icns",
             "category": "Admin"

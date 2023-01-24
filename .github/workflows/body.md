@@ -1,5 +1,5 @@
 # Quest 2 Management Software
 
-# About This Update
+## About This Update:
 
-This update includes support for m2 Macs
+This update includes some bug fixes and new features.

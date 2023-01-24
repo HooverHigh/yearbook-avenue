@@ -1,0 +1,54 @@
+<html lang="en">
+
+<head>
+    <meta charset='us-ascii'>
+    <title>About Quest 2 Management</title>
+    <link rel="shortcut icon" href="./img/navbar-icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="./css/material-dashboard.min.css">
+    <link rel="stylesheet" href="./fonts/Hubot_Sans/HubotSans.css">
+    <style>
+        body {
+            display: grid;
+            place-content: center;
+        }
+    </style>
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        };
+    </script>
+    <script src="./js/lib/jquery-3.3.1.min.js" type="application/javascript"></script>
+</head>
+
+<body class="dark-version">
+    <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+        <div class="card text-center mx-auto mb-4">
+            <div class="card-header bg-dark" style="font-family: Hubot-Sans; font-size: large;">
+                About Quest 2 Management
+            </div>
+            <div class="card-body">
+                <div class="card-text">
+                    <div class="mb-3">
+                        <img src="./img/app.png" width="200" />
+                        <p class="mt-4">Quest 2 Management Is made by <a style="color: var(--bs-link-color) !important;"
+                                href="https://github.com/oxmc">oxmc</a></p>
+                        <p id="appver">Application version: 0.0.0</p>
+                        <br>
+                        <p id="appcontrib" style="display: none; font-family: Hubot-Sans; font-size: large;">
+                            Contributors:</p>
+                        <div id="appcontribdiv"></div>
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <div class="card-footer bg-dark" style="font-family: Hubot-Sans;">
+                <p>Source code availible on <a class="font-weight-bold" style="color: var(--bs-link-color) !important;"
+                        href="https://github.com/hooverhigh/quest-2-management">github</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="./js/about.js"></script>
+</body>
+
+</html>

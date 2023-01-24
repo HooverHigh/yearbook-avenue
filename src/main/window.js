@@ -1,17 +1,28 @@
 /* All window creation functions */
 const { BrowserWindow, BrowserView, ipcMain, app } = require("electron");
 const windowStateKeeper = require("electron-window-state");
-const path = require("path");
-const fs = require("fs");
 var appdir = app.getAppPath();
-const config = require(`${appdir}/src/data/config.json`);
 
 /* Window functions */
 function createMainWindow() {
-    const modalwindow = (global.modalwindow = new BrowserWindow({
+    const AboutWindow = (global.AboutWindow = new BrowserWindow({
         modal: true,
-        show: false
+        show: false,
+        resizeable: false,
+        center: true,
+        icon: `${appdir}/src/view/assets/app.png`,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        }
     }));
+    AboutWindow.setMenu(null);
+    AboutWindow.loadFile(`${appdir}/src/view/about.html`);
+    AboutWindow.on('close', function (evt) {
+        evt.preventDefault();
+        AboutWindow.hide();
+    });
+    //AboutWindow.webContents.openDevTools();
     const SplashWindow = (global.SplashWindow = new BrowserWindow({
         width: 390,
         height: 370,
@@ -67,30 +78,6 @@ function createMainWindow() {
         width: mainWindow.getBounds().width,
         height: mainWindow.getBounds().height - 40,
     });
-
-    var UA = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36";;
-    PageView.webContents.setUserAgent(UA);
-    PageView.webContents.userAgent = UA
-
-    PageView.webContents.on('did-attach-webview', function (event, webContents) {
-        webContents.userAgent = UA;
-    });
-
-    PageView.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
-        //console.log(details.requestHeaders);
-        details.requestHeaders['User-Agent'] = UA;
-        callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
-    });
-    
-    PageView.webContents.session.webRequest.onHeadersReceived((details, callback) => {callback({
-        responseHeaders: {
-            //'Access-Control-Allow-Origin': ['*'],
-            // We use this to bypass headers
-            'Access-Control-Allow-Headers': ['*'],
-            ...details.responseHeaders,
-          },
-        });
-    });
     //PageView.webContents.openDevTools();
     mainWindow.on("resize", () => {
         PageView.setBounds({
@@ -120,12 +107,12 @@ function createMainWindow() {
     });
     ipcMain.on("window.close", () => {
         mainWindow.close();
+        AboutWindow.destroy();
         app.quit();
     });
 
     if (mainWindowState.isMaximized == true) {
         mainWindow.webContents.send("window.maximized");
-        //mainWindow.webContents.executeJavaScript(`var mainwin = ${JSON.stringify(mainWindowState)};`);
         mainWindow.webContents.executeJavaScript("document.getElementById('maximize').style.display = 'none';");
         mainWindow.webContents.executeJavaScript("document.getElementById('restore').style.display = 'flex';");
     };

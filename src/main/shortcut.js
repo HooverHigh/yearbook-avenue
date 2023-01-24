@@ -1,10 +1,10 @@
 /* Handle global keyboard shortcuts */
-const { globalShortcut, app, BrowserWindow } = require("electron");
+const { globalShortcut, app } = require("electron");
 var appdir = app.getAppPath();
 
 app.on("ready", () => {
     globalShortcut.register("CommandOrControl+Alt+A", () => {
-        app.showAboutPanel();
+        global.AboutWindow.show();
     });
     globalShortcut.register("CommandOrControl+Alt+I", () => {
         global.PageView.webContents.toggleDevTools();

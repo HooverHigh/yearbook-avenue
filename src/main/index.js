@@ -218,53 +218,35 @@ if (process.platform !== "win32" && process.platform !== "darwin") {
     app.commandLine.appendSwitch("enable-transparent-visuals");
     app.commandLine.appendSwitch("disable-gpu");
     app.disableHardwareAcceleration();
-}
-app.commandLine.appendSwitch('disable-features', 'CrossOriginOpenerPolicy')
-logger.log("Loading package.json and contriubutors.json");
+};
+
+logger.log("Loading package.json and contributors.json");
 logger.log("Creating Tray");
 /* Menu tray and about window */
 var packageJson = require(`${appdir}/package.json`); /* Read package.json */
 var contrib = require(`${appdir}/src/data/contributors.json`); /* Read contributors.json */
 var appAuthor = packageJson.author.name;
-if (Array.isArray(contrib.contributors) && contrib.contributors.length) {
-    var appContributors = contrib.contributors;
-    var stringContributors = appContributors.join(', ');
-} else {
-    var stringContributors = appAuthor;
-};
-var appYear = '2023'; /* The year since this app exists */
-var currentYear = new Date().getFullYear();
-/* Year format for copyright */
-if (appYear == currentYear) {
-    var copyYear = appYear;
-} else {
-    var copyYear = `${appYear}-${currentYear}`;
-};
+
 /* Tray Menu */
 const createTray = () => {
-    var creditText = stringContributors
     var trayMenuTemplate = [
         { label: appname, enabled: false },
         { type: 'separator' },
-        { label: 'About', role: 'about', click: function () { app.showAboutPanel(); } },
+        {
+            label: 'About', role: 'info', click: function () {
+                if (global.AboutWindow) {
+                    global.AboutWindow.show();
+                }
+            }
+        },
         { label: 'Quit', role: 'quit', click: function () { app.quit(); } }
     ];
-    tray = new Tray(`${appdir}/src/view/img/app.png`)
-    let trayMenu = Menu.buildFromTemplate(trayMenuTemplate)
-    tray.setContextMenu(trayMenu)
-    const aboutWindow = app.setAboutPanelOptions({
-        applicationName: appname,
-        iconPath: `${appdir}/src/view/img/app.png`,
-        applicationVersion: `Version: ${appversion}`,
-        authors: appContributors,
-        website: config.url,
-        credits: `Credits: ${creditText}`,
-        copyright: `Copyright © ${copyYear} ${appAuthor}`
-    })
+    var tray = new Tray(`${appdir}/src/view/img/tray-icon.png`);
+    let trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
+    tray.setContextMenu(trayMenu);
     tray.on('click', function (e) {
         global.mainWindow && global.mainWindow.focus();
     });
-    return aboutWindow
 };
 require('@electron/remote/main').initialize();
 /* When app ready, check for internet, then register q2mgm:// */
@@ -427,6 +409,138 @@ if (!gotTheLock) {
                 break;
         }
 
+        app.on('open-url', async (event, url) => {
+            switch (url) {
+                case "oauth":
+                    console.log("Handle oauth");
+                    if (uri[3] == "login") {
+                        try {
+                            const response = await axios.get(`https://protoshock.ml/discord/users/${uri[4]}`);
+                            userjson = response.data;
+                            if (PageView && PageView.webContents) {
+                                PageView.webContents.executeJavaScript(`var uj = atob('${userjson}');
+                            if (getData('DauthD')) {
+                                updateData('DauthD', uj);
+                            } else {
+                                storeData('DauthD', uj);
+                            };
+
+                            function jqdefer(method) {
+                                if (window.jQuery) {
+                                    method();
+                                } else {
+                                    setTimeout(function() { jqdefer(method) }, 50);
+                                }
+                            }
+
+                            jqdefer(function () {
+                                var duj = JSON.parse(getData("DauthD"));
+                                var dusername = duj.username + "#" + duj.discrim;
+                                var usericon = 'https://cdn.discordapp.com/avatars/'+duj.user.id+'/'+duj.user.avatar;
+
+                                $("#DLMODAL-title").html("<img src='./img/discord/discord-logo-white.svg' style='width: 40px;'/> Discord account added!");
+                                $("#DLMODAL-body").html('User account linked: ' + dusername);
+                                
+                                $("#DLGMODAL").modal({ backdrop: 'static', keyboard: false });
+                                $('#DLGMODAL').modal('show');
+                                
+                                setTimeout(function() {
+                                    $('#DLGMODAL').modal('hide');
+                                }, 3000);
+                            });`);
+                            } else {
+                                console.error("Discord oauth failed via uri handler");
+                            };
+                        } catch (e) {
+                            console.error("Discord oauth failed via uri handler e2");
+                        };
+                    } else if (uri[3] == "logout") {
+                        try {
+                            const response = await axios.get(`https://protoshock.ml/discord/users/${uri[4]}`);
+                            userjson = response.data;
+                            if (PageView && PageView.webContents) {
+                                PageView.webContents.executeJavaScript(`var uj = atob('${userjson}');
+                            if (getData('DauthD')) {
+                                updateData('DauthD', uj);
+                            } else {
+                                storeData('DauthD', uj);
+                            };
+
+                            function jqdefer(method) {
+                                if (window.jQuery) {
+                                    method();
+                                } else {
+                                    setTimeout(function() { jqdefer(method) }, 50);
+                                }
+                            }
+
+                            jqdefer(function () {
+                                var duj = JSON.parse(getData("DauthD"));
+                                var dusername = duj.username + "#" + duj.discrim;
+                                var usericon = 'https://cdn.discordapp.com/avatars/'+duj.user.id+'/'+duj.user.avatar;
+
+                                $("#DLMODAL-title").html("<img src='./img/discord/discord-logo-white.svg' style='width: 40px;'/> Discord account added!");
+                                $("#DLMODAL-body").html('User account linked: ' + dusername);
+                                
+                                $("#DLGMODAL").modal({ backdrop: 'static', keyboard: false });
+                                $('#DLGMODAL').modal('show');
+                                
+                                setTimeout(function() {
+                                    $('#DLGMODAL').modal('hide');
+                                }, 3000);
+                            });`);
+                            } else {
+                                console.error("Discord oauth failed via uri handler");
+                            };
+                        } catch (e) {
+                            console.error("Discord oauth failed via uri handler e2");
+                        };
+                    };
+                    break;
+
+                case "manage":
+                    console.log("Handle app install/uninstall");
+                    var appdata;
+                    var apibase = "https://github.com/IsaacMvmv/N/blob/main/applist.json";
+
+                    var modurl = `${apimods}?api_key=${access_token}&id=${uri[4]}`;
+                    var modjson;
+
+                    try {
+                        const response = await axios.get(modurl);
+                        modjson = response.data.data;
+                        modj = modjson;
+
+                        switch (uri[3]) {
+                            case "install":
+                                console.log("install mod", uri[4]);
+                                appdata = `installmod('mod.io', ${JSON.stringify(modj[0])});`;
+                                break;
+
+                            case "uninstall":
+                                console.log("uninstall mod", uri[4]);
+                                appdata = `removemod('uri', ${JSON.stringify(modj[0])});`;
+                                break;
+
+                            default:
+                                break;
+                        }
+                        if (PageView && PageView.webContents) {
+                            //console.log(appdata);
+                            PageView.webContents.executeJavaScript(appdata);
+                        } else {
+                            console.error("Mod install failed via uri handler");
+                        };
+                    } catch (error) {
+                        console.error("Mod install failed via uri handler e2");
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        });
+
         if (mainWindow) {
             if (mainWindow.isMinimized()) mainWindow.restore();
             mainWindow.focus();
@@ -438,6 +552,7 @@ if (!gotTheLock) {
     logger.log("Checking for internet and getting updates");
     app.whenReady().then(async () => {
         require("@electron/remote/main").enable(PageView.webContents);
+        require("@electron/remote/main").enable(AboutWindow.webContents);
         require("@electron/remote/main").enable(SplashWindow.webContents);
         /* Check for internet */
         checkInternet(function (isConnected) {
@@ -546,8 +661,4 @@ app.on('ready', () => {
         e.preventDefault();
         require('electron').shell.openExternal(url);
     });
-    /*app.on('open-url', (event, url) => {
-        dialog.showErrorBox('Welcome Back', `You arrived from: ${url}`);
-        PageView.webContents.send('uri', url);
-    });*/
 });

@@ -50,11 +50,11 @@ ipcRenderer.on('SplashWindow', async function (event, arg) {
         };
         progressText.innerHTML = "Downloading Launcher update..."
         if (os.platform() == "win32") {
-            appfile = `${appname}.exe`;
+            appfile = `${appname}-${os.arch()}.exe`;
         } else if (os.platform() == "darwin") {
-            appfile = `${appname}.app`;
+            appfile = `${appname}-${os.arch()}.app`;
         } else if (os.platform() == "linux") {
-            appfile = `${appname}.deb`;
+            appfile = `${appname}-${os.arch()}.deb`;
         };
         console.log("Downloading latest version...");
         progressText.innerHTML = 'Downloading update...';
@@ -66,81 +66,97 @@ ipcRenderer.on('SplashWindow', async function (event, arg) {
         var received_bytes = 0;
         var total_bytes = 0;
 
-        console.log(config.updatelauncher, `${appname}.zip`);
+        console.log(config.updatelauncher, appfile);
 
-        var req = request({
-            method: 'GET',
-            uri: config.updatelauncher,
-            headers: {
-                'UserAgent': 'clauncherbproto; launcherVerion: 1.0.0; claunchDOTNET 3.1; WindowsLaunch: 10;'
-            }
-        });
+        try {
+            var req = request({
+                method: 'GET',
+                uri: `${config.updatelauncher}/${appname}.zip`,
+                headers: {
+                    'UserAgent': `launchq2m; launcherVerion: ${packageJson.version}; ARCH: ${os.arch()}; PLATFORM: ${os.platform()};}`
+                }
+            });
 
-        var out = fs.createWriteStream(path.join(userDataPath, 'update', `${appname}.zip`));
-        req.pipe(out);
+            var out = fs.createWriteStream(path.join(userDataPath, 'update', `${appname}.zip`));
+            req.pipe(out);
 
-        req.on('response', function (data) {
-            // Change the total bytes value to get progress later.
-            //console.log(data.headers);
-            total_bytes = parseInt(data.headers['content-length']);
-        });
+            req.on('response', function (data) {
+                // Change the total bytes value to get progress later.
+                //console.log(data.headers);
+                total_bytes = parseInt(data.headers['content-length']);
+            });
 
-        req.on('data', function (chunk) {
-            // Update the received bytes
-            received_bytes += chunk.length;
+            req.on('data', function (chunk) {
+                // Update the received bytes
+                received_bytes += chunk.length;
 
-            var percentage = (received_bytes * 100) / total_bytes;
-            console.log(percentage.toFixed(2).split('.')[0].trim() + "% | " + received_bytes + " bytes out of " + total_bytes + " bytes.");
-            //console.log(percentage.toFixed(2).split('.')[0].trim());
+                var percentage = (received_bytes * 100) / total_bytes;
+                console.log(percentage.toFixed(2).split('.')[0].trim() + "% | " + received_bytes + " bytes out of " + total_bytes + " bytes.");
 
-            progbar.innerHTML = `${percentage.toFixed(2).split('.')[0].trim()}%`;
-            progbar.style = `width: ${percentage}%;`;
-            downloadProgressText.innerHTML = `${percentage.toFixed(2).split('.')[0].trim()}%`;
-            //progbar.innerHTML = `${percentage.toFixed(2).split('.')[0].trim()}%`;
-        });
+                console.log(percantage);
+                if (typeof percentage == "NaN") {
+                    downloadProgressText.innerHTML = `Unable to parse download percentage`;
+                } else {
+                    progbar.innerHTML = `${percentage.toFixed(2).split('.')[0].trim()}%`;
+                    progbar.style = `width: ${percentage}%;`;
+                    downloadProgressText.innerHTML = `${percentage.toFixed(2).split('.')[0].trim()}%`;
+                };
+            });
 
-        req.on('end', function () {
-            //alert("File succesfully downloaded");
-            console.log("Successfully downloaded new update!");
-            progressText.innerHTML = 'Download Complete!';
-            out.end();
-            setTimeout(async function () {
-                progressText.innerHTML = 'Extracting update...';
-                const extract = onezip.extract(path.join(userDataPath, 'update', `${appname}.zip`), path.join(userDataPath, 'update'));
+            req.on('end', function () {
+                //alert("File succesfully downloaded");
+                console.log("Successfully downloaded new update!");
+                progressText.innerHTML = 'Download Complete!';
+                out.end();
+                setTimeout(async function () {
+                    progressText.innerHTML = 'Extracting update...';
+                    const extract = onezip.extract(path.join(userDataPath, 'update', `${appname}.zip`), path.join(userDataPath, 'update'));
 
-                extract.on('file', (name) => {
-                    console.log(name);
-                });
+                    extract.on('file', (name) => {
+                        console.log(name);
+                    });
 
-                extract.on('start', (percent) => {
-                    console.log('extracting started');
-                });
+                    extract.on('start', (percent) => {
+                        console.log('extracting started');
+                    });
 
-                extract.on('progress', (percent) => {
-                    console.log(percent + '%');
-                    progbar.style = `width: ${percent}%;`;
-                    downloadProgressText.innerHTML = `${percent}%`;
-                    //progbar.innerHTML = `${percent}%`;
-                });
+                    extract.on('progress', (percent) => {
+                        console.log(percent + '%');
+                        if (percent == NaN) {
+                            downloadProgressText.innerHTML = `Unable to parse extraction percentage`;
+                        } else {
+                            progbar.style = `width: ${percent}%;`;
+                            downloadProgressText.innerHTML = `${percent}%`;
+                            //progbar.innerHTML = `${percent}%`;
+                        };
+                    });
 
-                extract.on('error', (error) => {
-                    console.error(error);
-                });
-
-                extract.on('end', () => {
-                    console.log('done');
-                    progressText.innerHTML = 'Extracted Update!';
-                    setTimeout(async function () {
+                    extract.on('error', (error) => {
+                        console.error(error);
+                        progressText.innerHTML = 'Error Extracting Update!';
+                        //downloadProgressText.style.display = "none";
+                        downloadProgressText.innerHTML = `Please try manualy downloading the update:<br><a href="${config.updatelauncher}" target="_blank" style="color: #DF6ADF;">${config.updatelauncher}</a><br><br><button class="btn br-4" onClick="app.quit();">Exit</button>`;
                         progbar.style.display = "none";
-                        fs.unlink(path.join(userDataPath, 'update', `${appname}.zip`), (err) => {
-                            if (err) throw err;
-                            console.log(path.join(userDataPath, 'update', `${appname}.zip`) + " was deleted");
-                            progressText.innerHTML = 'Updating...';
-                            ipcRenderer.send('FromSplashWindow', 'Restart');
-                        });
-                    }, 3000);
-                });
-            }, 3000);
-        });
+                    });
+
+                    extract.on('end', () => {
+                        console.log('done');
+                        progressText.innerHTML = 'Extracted Update!';
+                        setTimeout(async function () {
+                            progbar.style.display = "none";
+                            fs.unlink(path.join(userDataPath, 'update', `${appname}.zip`), (err) => {
+                                if (err) throw err;
+                                console.log(path.join(userDataPath, 'update', `${appname}.zip`) + " was deleted");
+                                progressText.innerHTML = 'Updating...';
+                                ipcRenderer.send('FromSplashWindow', 'Restart');
+                            });
+                        }, 3000);
+                    });
+                }, 3000);
+            });
+        } catch (e) {
+            console.log(e);
+            out.end();
+        };
     }
 })
