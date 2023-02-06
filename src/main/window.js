@@ -71,7 +71,8 @@ function createMainWindow() {
         },
     }));
     mainWindow.setBrowserView(PageView);
-    PageView.webContents.loadFile(`${appdir}/src/view/index.html`);
+    //PageView.webContents.loadFile(`${appdir}/src/view/index.html`);
+    PageView.loadUrl("https://yearbookavenue.jostens.com/");
     PageView.setBounds({
         x: 0,
         y: 40,
